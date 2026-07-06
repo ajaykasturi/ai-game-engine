@@ -1,16 +1,29 @@
-package lld.aiTurnBasedEngine;
+package api;
 
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
+import boards.TicTacToeBoard;
+import game.Board;
+import game.Cell;
+import game.GameResult;
+import game.Move;
+import game.Player;
+
+public class GameEngine {
+
+    public Board start(String type) {
+        if (type.equals("TicTacToe")) {
+            return new TicTacToeBoard();
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
-    public Board start() {
-        return new Board();
-    }
-
-    public void move(Board b, Player player, Move move) {
-
+    public void move(Board board, Player player, Move move) {
+        if (board instanceof TicTacToeBoard) {
+            TicTacToeBoard board1 = (TicTacToeBoard) board;
+            board1.setCell(move.getCell(), player.symbol());
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public GameResult isComplete(Board board) {
@@ -21,9 +34,10 @@ public class Main {
 
             for (int i = 0; i < 3; i++) {
                 rowComplete = true;
-                firstCharacter = board1.cells[i][0];
+                firstCharacter = board1.getCell(i, 0);
+                
                 for (int j = 1; j < 3; j++) {
-                    if (!board1.cells[i][j].equals(firstCharacter)) {
+                    if (!board1.getCell(i, j).equals(firstCharacter)) {
                         rowComplete = false;
                         break;
                     }
@@ -39,9 +53,9 @@ public class Main {
             boolean colComplete = true;
             for (int i = 0; i < 3; i++) {
                 colComplete = true;
-                firstCharacter = board1.cells[0][i];
+                firstCharacter = board1.getCell(0, i);
                 for (int j = 1; j < 3; j++) {
-                    if (!board1.cells[j][i].equals(firstCharacter)) {
+                    if (!board1.getCell(j, i).equals(firstCharacter)) {
                         colComplete = false;
                         break;
                     }
@@ -57,8 +71,8 @@ public class Main {
             boolean diagComplete = true;
             for (int i = 0; i < 3; i++) {
                 diagComplete = true;
-                firstCharacter = board1.cells[0][0];
-                if (!board1.cells[i][i].equals(firstCharacter)) {
+                firstCharacter = board1.getCell(0, 0);
+                if (!board1.getCell(i, i).equals(firstCharacter)) {
                     diagComplete = false;
                     break;
                 }
@@ -73,8 +87,8 @@ public class Main {
             boolean revDiagComplete = true;
             for (int i = 0; i < 3; i++) {
                 revDiagComplete = true;
-                firstCharacter = board1.cells[0][2];
-                if (!board1.cells[i][2 - i].equals(firstCharacter)) {
+                firstCharacter = board1.getCell(0, 2);
+                if (!board1.getCell(i, 2 - i).equals(firstCharacter)) {
                     revDiagComplete = false;
                     break;
                 }
@@ -90,7 +104,7 @@ public class Main {
             int countOfFilledCells = 0;
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (board1.cells[i][j] != null) {
+                    if (board1.getCell(i, j) != null) {
                         countOfFilledCells++;
                     }
                 }
@@ -104,30 +118,21 @@ public class Main {
             return new GameResult(false, "-");
         }
     }
-}
 
-class Board {
+    public Move suggestMove(Player computer, Board board) {
+        if (board instanceof TicTacToeBoard) {
+            TicTacToeBoard board1 = (TicTacToeBoard) board;
 
-}
-
-class TicTacToeBoard extends Board {
-    String[][] cells = new String[3][3];
-}
-
-class Player {
-
-}
-
-class Move {
-
-}
-
-class GameResult {
-    boolean isOver;
-    String winner;
-
-    public GameResult(boolean isOver, String winner) {
-        this.isOver = isOver;
-        this.winner = winner;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 1; j < 3; j++) {
+                    if (board1.getCell(i, j) == null) {
+                        return new Move(new Cell(i, j));
+                    }
+                }
+            }
+            throw new IllegalArgumentException();
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 }
