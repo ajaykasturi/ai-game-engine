@@ -4,15 +4,33 @@ import game.Board;
 import game.Cell;
 import game.Move;
 
-public class TicTacToeBoard extends Board {
+public class TicTacToeBoard implements Board {
     private String[][] cells = new String[3][3];
 
-    public String getCell(int row, int col) {
+    public String getSymbol(int row, int col) {
         return cells[row][col];
     }
 
     public void setCell(Cell cell, String symbol) {
-        cells[cell.getRow()][cell.getCol()] = symbol;
+        if (cells[cell.getRow()][cell.getCol()] == null) {
+            cells[cell.getRow()][cell.getCol()] = symbol;
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public void move(Move move) {
+        setCell(move.getCell(), move.getPlayer().symbol());
+    }
+
+    @Override
+    public TicTacToeBoard copy() {
+        TicTacToeBoard boardCopy = new TicTacToeBoard();
+        for (int i = 0; i < 3; i++) {
+            System.arraycopy(cells[i], 0, boardCopy.cells[i], 0, 3);
+        }
+        return boardCopy;
     }
 
     @Override
@@ -29,10 +47,5 @@ public class TicTacToeBoard extends Board {
             result += "\n";
         }
         return result;
-    }
-
-    @Override
-    public void move(Move move) {
-        setCell(move.getCell(), move.getPlayer().symbol());
     }
 }
